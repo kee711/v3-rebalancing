@@ -1,0 +1,41 @@
+{
+  "poolType": "cl",
+  "symbol": "WETH/USDC",
+  "timeStepMinutes": 60,
+  "lookbackDays": 60,
+  "initialCapitalUsd": 10000,
+  "feesApr": 0.22,
+  "emissionsApr": 0.28,
+  "liquidityUsd": 25000000,
+  "gasUsd": 0.01,
+  "dataSource": "thegraph",
+  "sample": {
+    "startPrice": 1800,
+    "volDaily": 0.045,
+    "driftDaily": 0,
+    "seed": 42
+  },
+  "theGraph": {
+    "apiKey": "d4c0a5c085fb290c32a66f2b870d2ace",
+    "subgraphId": "GENunSHWLBXm59mBSgPzQ8metBEp9YDfdqwFr91Av1UM",
+    "poolAddress": "0xb2cc224c1c9fee385f8ad6a55b4d94e92359dc59",
+    "startTimestamp": null,
+    "endTimestamp": null
+  },
+  "windows": {
+    "volDays": 7,
+    "twapShortHours": 6,
+    "twapLongHours": 48
+  },
+  "rebalanceParams": {
+    "minGasMultiple": 1.5,
+    "targetRebalanceHours": 12,
+    "bandWidthK": 1.2,
+    "minBandWidth": 0.01,
+    "maxBandWidth": 0.25,
+    "driftThreshold": 0.03,
+    "trendThreshold": 0.006,
+    "maxSkew": 0.04,
+    "rewardsClaimUsd": 50
+  }
+}
