@@ -238,6 +238,7 @@ export async function loadTheGraphSeries(backtestConfig: BacktestConfig): Promis
     const price = parseFloat(hour.close);
     const feesUsd = parseFloat(hour.feesUSD);
     const tvlUsd = parseFloat(hour.tvlUSD);
+    const volumeUsd = parseFloat(hour.volumeUSD);
 
     const liquidityUsd = tvlUsd > 0 ? tvlUsd : poolTvl;
     const hourlyFeesApr = liquidityUsd > 0 ? (feesUsd / liquidityUsd) * 24 * 365 : backtestConfig.feesApr;
@@ -248,7 +249,9 @@ export async function loadTheGraphSeries(backtestConfig: BacktestConfig): Promis
       feesApr: Math.min(hourlyFeesApr, 5),
       emissionsApr: backtestConfig.emissionsApr,
       liquidityUsd: liquidityUsd > 0 ? liquidityUsd : backtestConfig.liquidityUsd,
-      gasUsd: backtestConfig.gasUsd
+      gasUsd: backtestConfig.gasUsd,
+      volumeUsd: volumeUsd > 0 ? volumeUsd : 0,
+      feeTier
     });
   }
 
@@ -277,13 +280,16 @@ function resampleSeries(series: MarketPoint[], targetStepMinutes: number): Marke
       const avgEmissionsApr = bucket.reduce((sum, p) => sum + p.emissionsApr, 0) / bucket.length;
       const avgLiquidity = bucket.reduce((sum, p) => sum + p.liquidityUsd, 0) / bucket.length;
 
+      const totalVolume = bucket.reduce((sum, p) => sum + p.volumeUsd, 0);
       resampled.push({
         ts: bucket[0].ts,
         price: last.price,
         feesApr: avgFeesApr,
         emissionsApr: avgEmissionsApr,
         liquidityUsd: avgLiquidity,
-        gasUsd: last.gasUsd
+        gasUsd: last.gasUsd,
+        volumeUsd: totalVolume,
+        feeTier: last.feeTier
       });
     }
 
@@ -308,7 +314,9 @@ function resampleSeries(series: MarketPoint[], targetStepMinutes: number): Marke
           feesApr: current.feesApr,
           emissionsApr: current.emissionsApr,
           liquidityUsd: current.liquidityUsd,
-          gasUsd: current.gasUsd
+          gasUsd: current.gasUsd,
+          volumeUsd: current.volumeUsd / stepsPerHour, // Distribute volume
+          feeTier: current.feeTier
         });
       }
     }

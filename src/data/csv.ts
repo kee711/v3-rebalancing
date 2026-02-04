@@ -23,7 +23,9 @@ export function loadCsvSeries(filePath = DEFAULT_CSV_PATH): MarketPoint[] {
     feesApr: columns.indexOf("feesApr"),
     emissionsApr: columns.indexOf("emissionsApr"),
     liquidityUsd: columns.indexOf("liquidityUsd"),
-    gasUsd: columns.indexOf("gasUsd")
+    gasUsd: columns.indexOf("gasUsd"),
+    volumeUsd: columns.indexOf("volumeUsd"),
+    feeTier: columns.indexOf("feeTier")
   };
 
   if (idx.ts < 0 || idx.price < 0) {
@@ -40,7 +42,9 @@ export function loadCsvSeries(filePath = DEFAULT_CSV_PATH): MarketPoint[] {
         feesApr: idx.feesApr >= 0 ? Number(parts[idx.feesApr]) : 0,
         emissionsApr: idx.emissionsApr >= 0 ? Number(parts[idx.emissionsApr]) : 0,
         liquidityUsd: idx.liquidityUsd >= 0 ? Number(parts[idx.liquidityUsd]) : 0,
-        gasUsd: idx.gasUsd >= 0 ? Number(parts[idx.gasUsd]) : 0
+        gasUsd: idx.gasUsd >= 0 ? Number(parts[idx.gasUsd]) : 0,
+        volumeUsd: idx.volumeUsd >= 0 ? Number(parts[idx.volumeUsd]) : 0,
+        feeTier: idx.feeTier >= 0 ? Number(parts[idx.feeTier]) : 0.003
       } as MarketPoint;
     })
     .filter((point) => Number.isFinite(point.price) && Number.isFinite(point.ts));

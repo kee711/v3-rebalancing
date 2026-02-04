@@ -1,3 +1,5 @@
+import { getPositionValueUsd } from "./v3math.js";
+
 export type PoolType = "volatile" | "stable" | "cl";
 
 export type Action =
@@ -49,9 +51,7 @@ export interface VaultState {
 export interface PositionState {
   lower: number;
   upper: number;
-  liquidityUsd: number;
-  baseAmount: number;
-  quoteAmount: number;
+  liquidity: number; // V3 liquidity L (not USD value)
   lastRebalanceMs: number;
 }
 
@@ -65,6 +65,15 @@ export interface RebalanceParams {
   trendThreshold: number; // momentum trigger, e.g. 0.005
   maxSkew: number; // max skew fraction
   rewardsClaimUsd: number;
+  // Slippage parameters
+  swapSpreadBps: number; // bid-ask spread in basis points, e.g. 10 = 0.1%
+  priceImpactBps: number; // price impact per 1% of pool liquidity traded, e.g. 5 = 0.05%
+  // Fee tier
+  feeTier: number; // Pool fee tier, e.g. 0.003 for 0.3%
+  // Liquidity distribution assumption
+  avgPoolRangeWidth: number; // Average range width of other LPs, e.g. 0.2 = 20%
+  // MEV parameters
+  mevBps: number; // Base MEV extraction rate in basis points, e.g. 30 = 0.3%
 }
 
 export const defaultParams: RebalanceParams = {
@@ -77,6 +86,11 @@ export const defaultParams: RebalanceParams = {
   trendThreshold: 0.006,
   maxSkew: 0.04,
   rewardsClaimUsd: 50,
+  swapSpreadBps: 10, // 0.1% spread
+  priceImpactBps: 5, // 0.05% per 1% of pool liquidity
+  feeTier: 0.003, // 0.3% fee tier (typical for volatile pairs)
+  avgPoolRangeWidth: 0.2, // Assume average LP has 20% range width
+  mevBps: 15, // 0.15% base MEV extraction rate (for well-protected txs)
 };
 
 export class RangeAroundTWAPStrategy implements Strategy {
@@ -283,7 +297,18 @@ function estimateFeeGain(ctx: StrategyContext, capitalUsd: number): number {
 function totalVaultValue(ctx: StrategyContext): number {
   const baseValue = ctx.vault.baseBalance * ctx.pool.price;
   const quoteValue = ctx.vault.quoteBalance;
-  const positionValue = ctx.vault.position?.liquidityUsd ?? 0;
+
+  // Calculate position value using V3 math
+  let positionValue = 0;
+  if (ctx.vault.position) {
+    positionValue = getPositionValueUsd(
+      ctx.vault.position.liquidity,
+      ctx.vault.position.lower,
+      ctx.vault.position.upper,
+      ctx.pool.price
+    );
+  }
+
   return baseValue + quoteValue + positionValue;
 }
 

@@ -19,6 +19,7 @@ async function main() {
   console.log(`Fees: ${summary.feesUsd.toFixed(2)}`);
   console.log(`Emissions: ${summary.emissionsUsd.toFixed(2)}`);
   console.log(`Gas: ${summary.gasUsd.toFixed(2)}`);
+  console.log(`MEV Cost: ${summary.mevUsd.toFixed(2)}`);
   console.log(`Rebalances: ${summary.rebalances}`);
   console.log(`Max Drawdown: ${summary.maxDrawdownPct.toFixed(2)}%`);
 }

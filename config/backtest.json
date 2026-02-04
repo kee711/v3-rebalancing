@@ -29,6 +29,11 @@
     "driftThreshold": 0.03,
     "trendThreshold": 0.006,
     "maxSkew": 0.04,
-    "rewardsClaimUsd": 50
+    "rewardsClaimUsd": 50,
+    "swapSpreadBps": 10,
+    "priceImpactBps": 5,
+    "feeTier": 0.003,
+    "avgPoolRangeWidth": 0.2,
+    "mevBps": 15
   }
 }

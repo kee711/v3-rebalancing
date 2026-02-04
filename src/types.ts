@@ -39,6 +39,9 @@ export interface MarketPoint {
   emissionsApr: number;
   liquidityUsd: number;
   gasUsd: number;
+  // New: volume-based fee calculation
+  volumeUsd: number; // Trading volume in this time step
+  feeTier: number; // Fee tier (e.g., 0.003 for 0.3%)
 }
 
 export interface BacktestSummary {
@@ -49,6 +52,7 @@ export interface BacktestSummary {
   feesUsd: number;
   emissionsUsd: number;
   gasUsd: number;
+  mevUsd: number; // MEV/sandwich attack costs
   rebalances: number;
   maxDrawdownPct: number;
 }
